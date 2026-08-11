@@ -1,0 +1,62 @@
+class Solution {
+
+    public int splitArray(int[] nums, int k) {
+
+        int low = 0;                                      // Minimum possible answer
+        int high = 0;                                     // Maximum possible answer
+
+        for (int num : nums) {
+            low = Math.max(low, num);                     // low = maximum element
+            high += num;                                  // high = sum of all elements
+        }
+
+        int ans = high;                                   // Store the best answer found
+
+        while (low <= high) {                             // Binary search
+
+            int mid = low + (high - low) / 2;             // Possible maximum subarray sum
+
+            if (isPossible(nums, k, mid)) {               // Can we split using this limit?
+
+                ans = mid;                                // mid is a valid answer
+                high = mid - 1;                           // Try to find a smaller answer
+
+            } else {
+
+                low = mid + 1;                            // mid is too small
+            }
+        }
+
+        return ans;                                       // Return minimum possible answer
+    }
+
+
+    private boolean isPossible(int[] nums, int k, int limit) {
+
+        int count = 1;                                    // Start with 1 subarray
+        int currSum = 0;                                  // Sum of current subarray
+
+        for (int num : nums) {
+
+            if (num > limit) {                            // Single element > limit?
+                return false;                             // Impossible
+            }
+
+            if (currSum + num <= limit) {                 // Can we add num?
+
+                currSum += num;                           // Add num to current subarray
+
+            } else {
+
+                count++;                                  // Create a new subarray
+                currSum = num;                            // Start new subarray with num
+
+                if (count > k) {                          // More than k subarrays?
+                    return false;                         // Not possible
+                }
+            }
+        }
+
+        return count <= k;                                // Possible if subarrays <= k
+    }
+}
